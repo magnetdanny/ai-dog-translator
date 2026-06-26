@@ -1,18 +1,25 @@
 {
-  "name": "Dog Translator",
+  "name": "AI Dog Translator - MagnetDanny",
   "short_name": "Dog Talk",
   "description": "Translate what your dog is saying — tap a button and your phone speaks for your dog",
-  "start_url": "./index.html",
-  "id": "./index.html",
+  "start_url": "/ai-dog-translator/index.html",
+  "id": "/ai-dog-translator/index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fdf6ec",
   "theme_color": "#c86a00",
   "lang": "en",
+  "categories": ["utilities", "lifestyle"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "https://magnetdanny.github.io/ai-dog-translator/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://magnetdanny.github.io/ai-dog-translator/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
