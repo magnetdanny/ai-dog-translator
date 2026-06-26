@@ -1041,6 +1041,9 @@ function openAndroidTTSSettings() {
   );
 }
 
+// Languages that have pre-recorded audio (no TTS needed for buttons)
+const PRERECORDED_LANGS = ['he'];
+
 function updateVoiceDropdown(langCode) {
   const sel = document.getElementById("voiceSelect");
   const prefix = (LANG_BCP47[langCode] || langCode).toLowerCase();
@@ -1049,10 +1052,14 @@ function updateVoiceDropdown(langCode) {
   const banner = document.getElementById("noVoiceBanner");
   const androidBtn = document.getElementById("androidTTSBtn");
 
-  if (!hasVoice && langCode !== "en") {
+  // Only show the "no voice" banner if:
+  // 1. No TTS voice is available
+  // 2. Language is NOT one with pre-recorded audio (Hebrew buttons work fine)
+  // 3. Not English
+  const hasPrerecorded = PRERECORDED_LANGS.includes(langCode);
+  if (!hasVoice && !hasPrerecorded && langCode !== "en") {
     document.getElementById("noVoiceLangName").textContent = LANG_NAMES[langCode] || langCode;
     document.getElementById("noVoiceInstructions").textContent = INSTALL_INSTRUCTIONS[langCode] || "";
-    // Show the Android button only on Android
     if (androidBtn) androidBtn.style.display = isAndroid ? "block" : "none";
     banner.style.display = "block";
   } else {
@@ -1113,6 +1120,21 @@ function setStatus(msg, wave) {
 function speakCustom() {
   const text = document.getElementById("customText").value.trim();
   if (!text) { document.getElementById("customText").focus(); return; }
+
+  // If Hebrew with no TTS voice — show warning banner and stop
+  if (currentLang === 'he' && !selectedVoice) {
+    const banner = document.getElementById("noVoiceBanner");
+    const androidBtn = document.getElementById("androidTTSBtn");
+    document.getElementById("noVoiceLangName").textContent = "Hebrew";
+    document.getElementById("noVoiceInstructions").textContent = isAndroid
+      ? "Free text requires a Hebrew TTS voice. Tap the button below to install it."
+      : "Free text requires a Hebrew voice. iPhone: Settings → Accessibility → Spoken Content → Voices → Hebrew.";
+    if (androidBtn) androidBtn.style.display = isAndroid ? "block" : "none";
+    banner.style.display = "block";
+    banner.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
   showDogReaction({ e:"🐶", reaction: text.substring(0,50) + (text.length>50?"…":"") });
   speak(sanitizeForSpeech(text), null);
 }
