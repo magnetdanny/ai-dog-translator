@@ -275,9 +275,15 @@
     <span class="rv" id="rateVal">1.0×</span>
   </div>
 </div>
-<div id="noVoiceBanner" style="display:none;background:var(--warn-bg,#fff8e6);border-bottom:1px solid var(--border);padding:10px 16px;font-size:13px;line-height:1.6;color:var(--warn-txt,#7a5200);">
+<div id="noVoiceBanner" style="display:none;background:#fff8e6;border-bottom:1px solid var(--border);padding:12px 16px;font-size:13px;line-height:1.6;color:#7a5200;">
   <strong>⚠️ No <span id="noVoiceLangName"></span> voice installed on this device.</strong><br>
   <span id="noVoiceInstructions"></span>
+  <div id="androidTTSBtn" style="display:none;margin-top:10px;">
+    <button onclick="openAndroidTTSSettings()" style="background:#c86a00;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:8px;">
+      📲 Open Android TTS Settings
+    </button>
+    <p style="margin-top:8px;font-size:12px;color:#7a5200;">After installing the voice, come back and tap your language button again.</p>
+  </div>
 </div>
 
 <main>
@@ -904,15 +910,45 @@ function onVoiceChanged() {
 }
 
 const LANG_NAMES = { en:'English', he:'Hebrew', ru:'Russian', zh:'Chinese', fr:'French', ar:'Arabic', es:'Spanish' };
+
+// Detect Android
+const isAndroid = /android/i.test(navigator.userAgent);
+
 const INSTALL_INSTRUCTIONS = {
   en: '',
-  he: 'iPhone: Settings → Accessibility → Spoken Content → Voices → Hebrew → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install Hebrew.',
-  ru: 'iPhone: Settings → Accessibility → Spoken Content → Voices → Russian → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install Russian.',
-  zh: 'iPhone: Settings → Accessibility → Spoken Content → Voices → Chinese (Mainland/Taiwan) → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install Chinese.',
-  fr: 'iPhone: Settings → Accessibility → Spoken Content → Voices → French → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install French.',
-  ar: 'iPhone: Settings → Accessibility → Spoken Content → Voices → Arabic → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install Arabic.',
-  es: 'iPhone: Settings → Accessibility → Spoken Content → Voices → Spanish → download a voice.<br>Android: Settings → General Management → Language → Text-to-Speech → install Spanish.',
+  he: isAndroid
+    ? 'Hebrew voice not installed. Tap the button below to open Android TTS settings, then install Hebrew.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → Hebrew → download a voice.',
+  ru: isAndroid
+    ? 'Russian voice not installed. Tap the button below to open Android TTS settings, then install Russian.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → Russian → download a voice.',
+  zh: isAndroid
+    ? 'Chinese voice not installed. Tap the button below to open Android TTS settings, then install Chinese.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → Chinese → download a voice.',
+  fr: isAndroid
+    ? 'French voice not installed. Tap the button below to open Android TTS settings, then install French.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → French → download a voice.',
+  ar: isAndroid
+    ? 'Arabic voice not installed. Tap the button below to open Android TTS settings, then install Arabic.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → Arabic → download a voice.',
+  es: isAndroid
+    ? 'Spanish voice not installed. Tap the button below to open Android TTS settings, then install Spanish.'
+    : 'iPhone: Settings → Accessibility → Spoken Content → Voices → Spanish → download a voice.',
 };
+
+function openAndroidTTSSettings() {
+  // Try to open Android TTS settings via intent URL
+  // This works in Chrome on Android
+  const intentUrl = 'intent://com.android.settings/.TextToSpeechSettings#Intent;scheme=android-app;end';
+  const fallbackUrl = 'https://support.google.com/accessibility/android/answer/6006983';
+  try {
+    window.location.href = intentUrl;
+    // If intent fails, open help page after short delay
+    setTimeout(() => { window.open(fallbackUrl, '_blank'); }, 1500);
+  } catch(e) {
+    window.open(fallbackUrl, '_blank');
+  }
+}
 
 function updateVoiceDropdown(langCode) {
   const sel = document.getElementById("voiceSelect");
@@ -920,11 +956,19 @@ function updateVoiceDropdown(langCode) {
   const langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(prefix));
   const hasVoice = langVoices.length > 0;
   const banner = document.getElementById("noVoiceBanner");
+  const androidBtn = document.getElementById("androidTTSBtn");
+
   if (!hasVoice && langCode !== "en") {
     document.getElementById("noVoiceLangName").textContent = LANG_NAMES[langCode] || langCode;
-    document.getElementById("noVoiceInstructions").innerHTML = INSTALL_INSTRUCTIONS[langCode] || "";
+    document.getElementById("noVoiceInstructions").textContent = INSTALL_INSTRUCTIONS[langCode] || "";
+    // Show the Android button only on Android
+    if (androidBtn) androidBtn.style.display = isAndroid ? "block" : "none";
     banner.style.display = "block";
-  } else { banner.style.display = "none"; }
+  } else {
+    banner.style.display = "none";
+    if (androidBtn) androidBtn.style.display = "none";
+  }
+
   const voicesToShow = hasVoice ? langVoices : voices;
   sel.innerHTML = "";
   voicesToShow.forEach(v => {
