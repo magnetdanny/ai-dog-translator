@@ -25,14 +25,14 @@
   "screenshots": [
     {
       "src": "https://magnetdanny.github.io/ai-dog-translator/AI-Dog-Translator-screenshot01.jpg",
-      "sizes": "1290x2796",
+      "sizes": "720x768",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "AI Dog Translator home screen"
     },
     {
       "src": "https://magnetdanny.github.io/ai-dog-translator/AI-Dog-Translator-screenshot02.jpg",
-      "sizes": "1290x2796",
+      "sizes": "720x768",
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "AI Dog Translator phrases"
