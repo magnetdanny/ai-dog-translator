@@ -937,17 +937,18 @@ const INSTALL_INSTRUCTIONS = {
 };
 
 function openAndroidTTSSettings() {
-  // Try to open Android TTS settings via intent URL
-  // This works in Chrome on Android
-  const intentUrl = 'intent://com.android.settings/.TextToSpeechSettings#Intent;scheme=android-app;end';
-  const fallbackUrl = 'https://support.google.com/accessibility/android/answer/6006983';
-  try {
-    window.location.href = intentUrl;
-    // If intent fails, open help page after short delay
-    setTimeout(() => { window.open(fallbackUrl, '_blank'); }, 1500);
-  } catch(e) {
-    window.open(fallbackUrl, '_blank');
-  }
+  // Show step-by-step instructions in an alert since Android intent URLs
+  // are blocked in Chrome. User needs to go to settings manually.
+  alert(
+    "To install a Hebrew voice on Android:\n\n" +
+    "1. Open your phone Settings\n" +
+    "2. Search for 'Text-to-Speech'\n" +
+    "3. Tap 'Google Text-to-Speech Engine'\n" +
+    "4. Tap the ⚙️ gear icon\n" +
+    "5. Tap 'Install voice data'\n" +
+    "6. Find Hebrew and tap Download ⬇️\n" +
+    "7. Come back here and tap עב again!"
+  );
 }
 
 function updateVoiceDropdown(langCode) {
