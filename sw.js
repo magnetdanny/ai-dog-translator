@@ -1,4 +1,4 @@
-const CACHE = "dog-translator-v1";
+const CACHE = "dog-translator-v2";
 const ASSETS = [
   "./index.html",
   "./manifest.json",
